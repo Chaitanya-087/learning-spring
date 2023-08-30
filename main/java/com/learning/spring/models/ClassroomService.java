@@ -6,22 +6,31 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.learning.spring.dao.StudentDao;
 
-
 @Component
-public class Classroom {
+public class ClassroomService {
   private List<Student> students;
   private static int idCounter = 1;
 
-  public Classroom() {
-    students = new ArrayList<>();
+  @Autowired
+  private StudentDao studentDAO;
+
+  public ClassroomService() {
+    if (students == null)
+      students = new ArrayList<>();
   }
-  
+
+  public void sync() {
+    students = studentDAO.readAllStudents();
+    rank();
+  }
+
   public List<Student> getStudents() {
+    if (students.isEmpty())
+      sync();
     return Collections.unmodifiableList(students);
   }
 
@@ -30,30 +39,31 @@ public class Classroom {
     int maxScore = students.get(0).getScore();
     int rank = 1;
     for (int i = 0; i < students.size(); i++) {
-        if (students.get(i).getScore() != maxScore) {
-            maxScore = students.get(i).getScore();
-            rank = i + 1;
-        }
-        students.get(i).setRank(rank);
+      if (students.get(i).getScore() != maxScore) {
+        maxScore = students.get(i).getScore();
+        rank = i + 1;
+      }
+      students.get(i).setRank(rank);
     }
   }
 
   public void add(Student student) {
     student.setId(idCounter++);
     students.add(student);
-    rank();
+    studentDAO.createStudent(student);
+    sync();
   }
-  
+
   public void remove(int id) {
     for (Student s : students) {
-        if (s.getId() == id) {
-            students.remove(s);
-            break;
-        }
+      if (s.getId() == id) {
+        students.remove(s);
+        break;
+      }
     }
     rank();
   }
-  
+
   public void replace(int id, Student current) {
     for (int i = 0; i < students.size(); i++) {
       if (students.get(i).getId() == id) {
@@ -63,7 +73,7 @@ public class Classroom {
     }
     rank();
   }
-  
+
   public Optional<Student> getById(int id) {
     for (int i = 0; i < students.size(); i++) {
       if (students.get(i).getId() == id)
@@ -72,4 +82,3 @@ public class Classroom {
     return Optional.empty();
   }
 }
-

@@ -10,6 +10,7 @@
       <form action="#" th:action="@{/classroom/add}" method="post">
         <input type="text" name="name" id="name" placeholder="enter name" />
         <input type="text" name="score" id="score" placeholder="enter score" />
+        <!-- <div class="alert alert-warning" th:if="${#fields.hasErrors('score')}" th:errors="*{score}"></div> -->
         <input type="submit" value="add" name="action" />
       </form>
       <h1>Students</h1>
