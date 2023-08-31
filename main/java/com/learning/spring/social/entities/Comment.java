@@ -1,6 +1,4 @@
 package com.learning.spring.social.entities;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,17 +9,21 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "comments")
 @Data
-public class Post {
+public class Comment {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String title;
     private String content;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "authorId", referencedColumnName = "id")
-    private User author;
+    @ManyToOne
+    @JoinColumn(name = "userId", referencedColumnName = "id")
+    private User user;
+
+
+    @ManyToOne
+    @JoinColumn(name = "postId", referencedColumnName = "id")
+    private Post post;
 }
