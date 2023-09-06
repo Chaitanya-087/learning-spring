@@ -17,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.learning.spring.social.bindings.AddCommentForm;
 import com.learning.spring.social.bindings.AddPostForm;
+import com.learning.spring.social.business.LoggedInUser;
+import com.learning.spring.social.business.NeedsAuth;
 import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.entities.Like;
 import com.learning.spring.social.entities.LikeId;
@@ -36,6 +38,9 @@ import jakarta.servlet.ServletException;
 public class ForumController {
 
     @Autowired
+    private LoggedInUser loggedInUser;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -47,22 +52,23 @@ public class ForumController {
     @Autowired
     private LikeCRUDRepository likeCRUDRepository;
 
-    private List<User> userList;
+    // private List<User> userList;
 
-    @PostConstruct
-    public void init() {
-        userList = new ArrayList<>();
-    }
-
+    // @PostConstruct
+    // public void init() {
+    // userList = new ArrayList<>();
+    // }
+    @NeedsAuth(loginPage = "/loginpage")
     @GetMapping("/post/form")
     public String getPostForm(Model model) {
         model.addAttribute("postForm", new AddPostForm());
-        userRepository.findAll().forEach(user -> userList.add(user));
-        model.addAttribute("userList", userList);
-        model.addAttribute("authorid", 1);
+        // userRepository.findAll().forEach(user -> userList.add(user));
+        // model.addAttribute("userList", userList);
+        // model.addAttribute("authorid", 1);
         return "forum/postForm";
     }
 
+    @NeedsAuth(loginPage = "/loginpage")
     @PostMapping("/post/add")
     public String addNewPost(@ModelAttribute("postForm") AddPostForm postForm, BindingResult bindingResult,
             RedirectAttributes attr) throws ServletException {
@@ -72,12 +78,10 @@ public class ForumController {
             attr.addFlashAttribute("post", postForm);
             return "redirect:/forum/post/form";
         }
-        Optional<User> user = userRepository.findById(postForm.getAuthorId());
-        if (user.isEmpty()) {
-            throw new ServletException("Something went seriously wrong and we couldn't find the user in the DB");
-        }
+
+        User user = loggedInUser.getLoggedInUser();
         Post post = new Post();
-        post.setAuthor(user.get());
+        post.setAuthor(user);
         post.setContent(postForm.getContent());
         post.setTitle(postForm.getTitle());
         postRepository.save(post);
@@ -95,19 +99,19 @@ public class ForumController {
 
         model.addAttribute("commentList", commentList);
         model.addAttribute("post", post.get());
-        model.addAttribute("userList", userList);
         int numLikes = likeCRUDRepository.countByPostId(id);
         model.addAttribute("likeCount", numLikes);
-        model.addAttribute("userId", 1);
         model.addAttribute("commentForm", new AddCommentForm());
         return "forum/posts";
     }
 
+    @NeedsAuth(loginPage = "/loginpage")
     @PostMapping("/post/{id}/like")
-    public String postLike(@PathVariable int id, Integer likerId, RedirectAttributes attr) {
+    public String postLike(@PathVariable int id, RedirectAttributes attr) {
         LikeId likeId = new LikeId();
-        System.out.println(likerId);
-        likeId.setUser(userRepository.findById(likerId).get());
+        // TODO: change this to logged in users id
+        User user = loggedInUser.getLoggedInUser();
+        likeId.setUser(user);
         likeId.setPost(postRepository.findById(id).get());
         Like like = new Like();
         like.setLikeId(likeId);
@@ -115,22 +119,16 @@ public class ForumController {
         return String.format("redirect:/forum/post/%d", id);
     }
 
+    @NeedsAuth(loginPage = "/loginpage")
     @PostMapping("/post/{id}/comment")
     public String commentOnPost(@ModelAttribute("commentForm") AddCommentForm commentForm, @PathVariable int id) {
-        Optional<User> user = userRepository.findById(commentForm.getUserId());
+        User user = loggedInUser.getLoggedInUser();
         Optional<Post> post = postRepository.findById(id);
-
-        if (user.isEmpty() || post.isEmpty()) {
-            System.out.println("Something went wrong");
-            return String.format("redirect:/forum/post/%d", id);
-        }
-
         Comment comment = new Comment();
         comment.setContent(commentForm.getContent());
         comment.setPost(post.get());
-        comment.setUser(user.get());
+        comment.setUser(user);
         commentRepository.save(comment);
-
         return String.format("redirect:/forum/post/%d", id);
     }
 }

@@ -17,14 +17,14 @@
       <input type="text" name="title" th:field="*{title}" />
       <label for="content">Content</label>
       <textarea id="content" name="content" th:field="*{content}"></textarea>
-      <label for="userdropdown">Select your username</label>
+      <!-- <label for="userdropdown">Select your username</label>
       <select id="userdropdown" th:field="*{authorId}">
         <option
           th:each="userOption : ${userList}"
           th:value="${userOption.id}"
           th:text="${userOption.name}"
         ></option>
-      </select>
+      </select> -->
       <input type="submit" value="Create!" />
     </form>
   </body>
