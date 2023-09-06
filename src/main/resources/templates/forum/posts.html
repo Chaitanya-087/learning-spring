@@ -14,6 +14,7 @@
       <li th:each="comment : ${commentList}">
         <p th:text="${comment.content}">This is a comment.</p>
         <p>By: <span th:text="${comment.user.name}">John Doe</span></p>
+        
       </li>
     </ul>
     <form

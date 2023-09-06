@@ -9,4 +9,6 @@ import com.learning.spring.social.entities.Comment;
 public interface CommentRepository extends CrudRepository<Comment, Integer>{
     @Query(value = "select * from comments c where postId = ?1", nativeQuery = true)
     List<Comment> findAllByPostId(Integer postId);
+
+    
 }

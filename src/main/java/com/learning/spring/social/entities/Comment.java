@@ -22,8 +22,11 @@ public class Comment {
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user;
 
-
     @ManyToOne
     @JoinColumn(name = "postId", referencedColumnName = "id")
     private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "parentId", referencedColumnName = "id")
+    private Comment parent;
 }
