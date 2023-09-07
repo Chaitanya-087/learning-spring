@@ -4,17 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      
+    </style>
   </head>
   <body th:object="${post}">
     <h1>Post by <span th:text="*{author.name}">John Doe</span></h1>
     <h2 th:text="*{title}">post title.</h2>
     <p th:text="*{content}">This is a post.</p>
     <p>Likes: <span th:text="${likeCount}">0</span></p>
-    <ul class="comments" >
+    <ul class="comments">
       <li th:each="comment : ${commentList}">
         <p th:text="${comment.content}">This is a comment.</p>
         <p>By: <span th:text="${comment.user.name}">John Doe</span></p>
-        
+        <button class="replyToComment">REPLY!</button>
+        <form
+          action="#"
+          th:action="@{/forum/post/{id}/reply/{parentId}(id = ${post.id}, parentId = ${comment.id})}"
+          method="post"
+          id="replyToCommentForm"
+        >
+          <input type="text" name="content" id="content" />
+          <input type="submit" value="reply!" />
+        </form>
+        <ul class="replies">
+          <li th:each="reply : ${comment.replies}">
+            <p th:text="${reply.content}">this reply</p>
+            <p>By: <span th:text="${reply.user.name}">John Doe</span></p>
+            <p>repling to <span th:text="${reply.parent.user.name}"></span></p>
+            <button class="replyToReply">REPLY!</button>
+            <form
+              action="#"
+              th:action="@{/forum/post/{id}/reply/{parentId}(id = ${post.id}, parentId = ${reply.parent.id})}"
+              method="post"
+              id="replyToReplyForm"
+            >
+              <input type="text" name="content" id="content" />
+              <input type="submit" value="reply!" />
+            </form>
+          </li>
+        </ul>
       </li>
     </ul>
     <form
@@ -31,8 +60,14 @@
       method="post"
     >
       <label for="comment">comment</label>
-      <textarea name="content" id="content" cols="30" rows="10" th:field="*{content}"></textarea>
-      <input type="submit" value="comment!">
+      <textarea
+        name="content"
+        id="content"
+        cols="30"
+        rows="10"
+        th:field="*{content}"
+      ></textarea>
+      <input type="submit" value="comment!" />
     </form>
   </body>
 </html>

@@ -7,4 +7,5 @@ import lombok.Data;
 public class AddPostForm {
   private String content;
   private String title;
+  private int userId;
 }
