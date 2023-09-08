@@ -1,0 +1,122 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style: none;
+}
+body {
+  font-family: sans-serif;
+}
+a {
+  text-decoration: none;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  width: 100vw;
+  max-width: 90%;
+  margin: auto;
+  height: 60px;
+  padding-inline: 1rem;
+  justify-content: space-between;
+}
+
+#search-form {
+  display: flex;
+  align-items: center;
+  border-radius: 25px;
+  border: 2px solid rgba(209, 213, 219, 0.3);;
+}
+
+.btn-auth {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: capitalize;
+    text-decoration: underline;
+    color: #555555;
+}
+
+#search-form input {
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  padding: 0.5rem;
+  width: 200px;
+  outline: none;
+  padding-left: 10px;
+  font-size: 15px;
+  color: #000;
+}
+
+#search-form .btn-search {
+    border: none;
+    background-color: transparent;
+    outline: none;
+    padding-inline: 1rem;
+    cursor: pointer;
+}
+.navbar a {
+  color: #555555;
+  font-weight: 700;
+    font-size: 15px;
+  height: 60px;
+}
+.user-details-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.user-details-wrapper .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    background-color: tomato;
+}
+.user-details .name {
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: capitalize;
+    color: #000;
+}
+.navbar .logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #000;
+}
+
+.navbar nav ul {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+header {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: hsla(0, 0%, 100%, 0.75);
+  border-bottom: 1px solid rgba(209, 213, 219, 0.3);
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+main {
+  min-height: 200vh;
+  width: 100%;
+  max-width: 90%;
+  margin: 0 auto;
+  padding-top: calc(4rem + 10px);
+}

@@ -13,11 +13,11 @@ import lombok.Data;
 public class LikeId implements Serializable{
     private static final long serialVersionUID = 5469065220719817005L;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "userId", referencedColumnName = "id")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "postId", referencedColumnName = "id")
     private Post post;
 }

@@ -7,11 +7,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-       @Autowired
+    @Autowired
     private DomainUserService domainUserService;
 
     @Override
@@ -22,9 +20,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
         var domainUser = domainUserOpt.get();
         UserDetails userDetails = User
-            .withUsername(domainUser.getName())
-            .password(domainUser.getPassword())
-            .build();
+                .withUsername(domainUser.getName())
+                .password(domainUser.getPassword())
+                .build();
         return userDetails;
     }
 }

@@ -1,4 +1,4 @@
-package com.learning.spring.social.bindings;
+package com.learning.spring.social.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import com.learning.spring.social.entities.User;
 import lombok.Data;
 
 @Data
-public class HybridComment {
+public class CommentDTO {
     private Integer id;
     private Post post;
     private List<Comment> replies = new ArrayList<>();

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <script src="https://kit.fontawesome.com/70f63a8d9c.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <header th:insert="~{forum/fragments.html :: navbar}"></header>
+    <main>
+        <div class="posts" th:each="post :${posts}">
+            <div class="post">
+                <a th:href="@{/forum/post/{id}(id = ${post.id})}">
+                    <h2><span th:text="${post.title}"></span></h1>
+                </a>
+                <h3>Post by <span class="userId" th:text="${post.author.name}">John Doe</span></h1>
+                <h3>Updated at: <span th:text="${#calendars.format(post.createdAt, 'dd/MMM/yyyy HH:mm z')}"></span></h3>
+                <p th:text="${post.content}">This is a post.</p>
+                <form method="post" action="#" th:action="@{/forum/post/{id}/like(id = ${post.id})}">
+                    <input type="submit" value="Like!">
+                </form>
+                <form action="#" th:action="@{/forum/post/{id}/comment(id = ${post.id})}" method="post">
+                    <input name="content" type="text">
+                    <input type="submit" value="Add Comment">
+                </form>
+            </div>
+        </div>
+    </main>
+    <script>
+      const symbol = document.querySelector(".name").innerText.charAt(0).toUpperCase();
+      document.querySelector(".avatar-text").innerHTML = symbol;
+  </script>
+  </body>
+</html>

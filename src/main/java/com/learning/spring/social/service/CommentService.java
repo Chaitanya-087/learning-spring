@@ -1,17 +1,16 @@
 package com.learning.spring.social.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.learning.spring.social.bindings.HybridComment;
+import com.learning.spring.social.dto.CommentDTO;
 import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.repositories.CommentRepository;
-
 
 @Component
 public class CommentService {
@@ -19,37 +18,31 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
-    public List<HybridComment> findAllByPostId(Integer postId) {
+    public List<CommentDTO> findAllByPostId(Integer postId) {
         List<Comment> comments = commentRepository.findAllByPostId(postId);
-        Map<Integer, HybridComment> commentMap = new HashMap<>();
+        Map<Integer, CommentDTO> commentMap = new HashMap<>();
 
         for (Comment comment : comments) {
-            HybridComment hComment = new HybridComment();
             if (comment.getParent() == null) {
-                hComment = createHybridComment(comment);
-                // topLevelComments.add(hComment);
-                commentMap.put(comment.getId(), hComment);
-            }
-        }
-
-        for (Comment comment : comments) {
-            if (comment.getParent() != null) {
-                Comment parentComment = findCommonAncestor(comment);
-                commentMap.get(parentComment.getId()).getReplies().add(comment);
+                commentMap.putIfAbsent(comment.getId(), createCommentDTO(comment));
+            } else {
+                Comment ancestor = findCommonAncestor(comment);
+                commentMap.putIfAbsent(ancestor.getId(), createCommentDTO(ancestor));
+                commentMap.get(ancestor.getId()).getReplies().add(comment);
             }
         }
         return commentMap.values().stream().toList();
     }
 
-    
-    private HybridComment createHybridComment(Comment comment) {
-        HybridComment hComment = new HybridComment();
-        hComment.setId(comment.getId());
-        hComment.setContent(comment.getContent());
-        hComment.setUser(comment.getUser());
-        hComment.setPost(comment.getPost());
-        return hComment;
+    private CommentDTO createCommentDTO(Comment comment) {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setId(comment.getId());
+        commentDTO.setContent(comment.getContent());
+        commentDTO.setUser(comment.getUser());
+        commentDTO.setPost(comment.getPost());
+        return commentDTO;
     }
+
     private Comment findCommonAncestor(Comment comment) {
         if (comment.getParent() == null) {
             return comment;
@@ -61,4 +54,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    public Optional<Comment> findById(Integer id) {
+        return commentRepository.findById(id);
+    }
 }
