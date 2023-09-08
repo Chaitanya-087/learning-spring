@@ -30,11 +30,11 @@ public class Post {
     @CreationTimestamp
     private java.util.Date createdAt;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "authorId", referencedColumnName = "id")
     private User author;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "PostTags", joinColumns = @JoinColumn(name = "postId", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "tagId", referencedColumnName = "id"))
     private Set<Tag> tags;
 }

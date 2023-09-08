@@ -1,8 +1,10 @@
 package com.learning.spring.controllers;
 
 import java.security.Principal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,12 +28,15 @@ import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.entities.Like;
 import com.learning.spring.social.entities.LikeId;
 import com.learning.spring.social.entities.Post;
+import com.learning.spring.social.entities.Tag;
 import com.learning.spring.social.entities.User;
 import com.learning.spring.social.exceptions.ResourceNotFoundException;
 import com.learning.spring.social.repositories.LikeCRUDRepository;
 import com.learning.spring.social.repositories.PostRepository;
+import com.learning.spring.social.repositories.TagRepository;
 import com.learning.spring.social.service.CommentService;
 import com.learning.spring.social.service.DomainUserService;
+import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
 
 import jakarta.servlet.ServletException;
 
@@ -40,6 +45,9 @@ import jakarta.servlet.ServletException;
 public class ForumController {
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @Autowired
     private DomainUserService domainUserService;
@@ -92,6 +100,13 @@ public class ForumController {
         User user = domainUserService.getByName(userDetails.getUsername()).get();
         Post post = new Post();
         post.setAuthor(user);
+        
+        Set<Tag> tags = new HashSet<>();
+        Tag tag = new Tag();
+        tag.setName("test");
+        tagRepository.save(tag);
+        tags.add(tag);
+        post.setTags(tags);
         post.setContent(postForm.getContent());
         post.setTitle(postForm.getTitle());
         postRepository.save(post);
