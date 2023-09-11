@@ -120,22 +120,22 @@ public class ForumController {
         post.setTags(postTags);
         postRepository.save(post);
 
-        return String.format("redirect:/forum/post/%d", post.getId());
+        return "redirect:/forum";
     }
 
-    @GetMapping("/post/{id}")
-    public String postDetail(@PathVariable int id, Model model, @AuthenticationPrincipal UserDetails userDetails)
-            throws ResourceNotFoundException {
-        PostDTO postDTO = postService.findById(id);
+    // @GetMapping("/post/{id}")
+    // public String postDetail(@PathVariable int id, Model model, @AuthenticationPrincipal UserDetails userDetails)
+    //         throws ResourceNotFoundException {
+    //     PostDTO postDTO = postService.findById(id);
 
-        // List<CommentDTO> commentList = commentService.findAllByPostId(id);
-        // model.addAttribute("commentList", commentList);
-        model.addAttribute("post", postDTO);
-        // int numLikes = likeCRUDRepository.countByPostId(id);
-        // model.addAttribute("likeCount", numLikes);
-        // model.addAttribute("commentForm", new AddCommentForm());
-        return "forum/posts";
-    }
+    //     // List<CommentDTO> commentList = commentService.findAllByPostId(id);
+    //     // model.addAttribute("commentList", commentList);
+    //     model.addAttribute("post", postDTO);
+    //     // int numLikes = likeCRUDRepository.countByPostId(id);
+    //     // model.addAttribute("likeCount", numLikes);
+    //     // model.addAttribute("commentForm", new AddCommentForm());
+    //     return "forum/posts";
+    // }
 
     @PostMapping("/post/{id}/like")
     public String postLike(@PathVariable int id, @AuthenticationPrincipal UserDetails userDetails,
@@ -146,7 +146,7 @@ public class ForumController {
         Like like = new Like();
         like.setLikeId(likeId);
         likeCRUDRepository.save(like);
-        return String.format("redirect:/forum/post/%d", id);
+        return "redirect:/forum";
     }
 
     @PostMapping("/post/{id}/comment")
@@ -158,7 +158,7 @@ public class ForumController {
         comment.setPost(post.get());
         comment.setUser(domainUserService.getByName(userDetails.getUsername()).get());
         commentService.save(comment);
-        return String.format("redirect:/forum/post/%d", id);
+        return "redirect:/forum";
     }
 
     @PostMapping("/post/{id}/reply/{parentId}")
@@ -171,7 +171,7 @@ public class ForumController {
         comment.setUser(domainUserService.getByName(userDetails.getUsername()).get());
         comment.setParent(commentService.findById(parentId).get());
         commentService.save(comment);
-        return String.format("redirect:/forum/post/%d", id);
+        return "redirect:/forum";
     }
 
     @GetMapping("/register")

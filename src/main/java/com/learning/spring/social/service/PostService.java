@@ -84,27 +84,38 @@ public class PostService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = Exception.class)
     public List<PostDTO> findByPattern(String pattern) {
         List<PostDTO> postDTOs = new ArrayList<>();
-        // List<Post> posts = postRepository.findByPattern(pattern);
+        List<Post> posts = new ArrayList<>();
+        switch(pattern.substring(0, 1)) {
+            case "#":
+                posts = postRepository.findPostsByTagName(pattern.substring(1));
+                break;
+            case "@":
+                posts = postRepository.findPostsByUser(pattern.substring(1));
+                break;
+            default:
+                posts = postRepository.findAllByPattern(pattern);
+                break;
+        }
 
-        // for (Post post : posts) {
-        //     PostDTO postDTO = new PostDTO();
-        //     UserDTO userDTO = new UserDTO();
-        //     userDTO.setId(post.getAuthor().getId());
-        //     userDTO.setName(post.getAuthor().getName());
-        //     userDTO.setSymbol(post.getAuthor().getName().substring(0, 1));
-        //     int likesCount = likeCRUDRepository.countByPostId(post.getId());
-        //     int commentsCount = commentRepository.countByPostId(post.getId());
-        //     Set<Tag> tags = tagRepository.findByPost(post);
-        //     postDTO.setId(post.getId());
-        //     postDTO.setTitle(post.getTitle());
-        //     postDTO.setContent(post.getContent());
-        //     postDTO.setAuthor(userDTO);
-        //     postDTO.setCreatedAt(post.getCreatedAt());
-        //     postDTO.setLikesCount(likesCount);
-        //     postDTO.setCommentsCount(commentsCount);
-        //     postDTO.setTags(tags);
-        //     postDTOs.add(postDTO);
-        // }
+        for (Post post : posts) {
+            PostDTO postDTO = new PostDTO();
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(post.getAuthor().getId());
+            userDTO.setName(post.getAuthor().getName());
+            userDTO.setSymbol(post.getAuthor().getName().substring(0, 1));
+            int likesCount = likeCRUDRepository.countByPostId(post.getId());
+            int commentsCount = commentRepository.countByPostId(post.getId());
+            Set<Tag> tags = tagRepository.findByPost(post);
+            postDTO.setId(post.getId());
+            postDTO.setTitle(post.getTitle());
+            postDTO.setContent(post.getContent());
+            postDTO.setAuthor(userDTO);
+            postDTO.setCreatedAt(post.getCreatedAt());
+            postDTO.setLikesCount(likesCount);
+            postDTO.setCommentsCount(commentsCount);
+            postDTO.setTags(tags);
+            postDTOs.add(postDTO);
+        }
 
         return postDTOs;
     }
