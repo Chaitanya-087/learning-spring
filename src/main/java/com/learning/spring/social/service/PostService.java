@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.learning.spring.social.dto.CommentDTO;
 import com.learning.spring.social.dto.PostDTO;
 import com.learning.spring.social.dto.UserDTO;
+import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.entities.Post;
 import com.learning.spring.social.entities.Tag;
 import com.learning.spring.social.repositories.CommentRepository;
@@ -32,6 +34,9 @@ public class PostService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private CommentService commentService;
 
     @Transactional(propagation = Propagation.REQUIRED, readOnly = true, noRollbackFor = Exception.class)
     public List<PostDTO> findAll() {
@@ -75,6 +80,7 @@ public class PostService {
     }
 
     private PostDTO createPostDTO(Post post) {
+        List<CommentDTO> commentDTOs = commentService.findAllByPostId(post.getId());
         PostDTO postDTO = new PostDTO();
         UserDTO authorDTO = new UserDTO();
         authorDTO.setId(post.getAuthor().getId());
@@ -90,6 +96,7 @@ public class PostService {
         postDTO.setCreatedAt(post.getCreatedAt());
         postDTO.setLikesCount(likesCount);
         postDTO.setCommentsCount(commentsCount);
+        postDTO.setComments(commentDTOs);
         postDTO.setTags(tags);
         return postDTO;
     }

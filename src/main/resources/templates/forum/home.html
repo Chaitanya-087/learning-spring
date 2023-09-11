@@ -95,7 +95,7 @@
               </div>
               <div class="author-info">
                 <p class="name" th:text="${post.author.name}">John Doe</p>
-                <span class="createdAt">just now</span>
+                <span class="createdAt" th:text="${#calendars.format(post.createdAt, 'dd MMM, yyyy')}">just now</span>
               </div>
             </div>
           </div>
@@ -156,6 +156,20 @@
                 <i class="fa-solid fa-ellipsis"></i>
               </div>
             </div>
+          </div>
+          <div class="comments-group">
+            <ul>
+              <li th:each="comment : ${post.comments}">
+                <p th:text="${comment.user.name}"></p>
+                <p th:text="${comment.content}"></p>
+                <ul class="replies">
+                  <li th:each="reply: ${comment.replies}">
+                    <p th:text="${reply.user.name}"></p>
+                    <p th:text="${reply.content}"></p>
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </div>
         </article>
       </section>

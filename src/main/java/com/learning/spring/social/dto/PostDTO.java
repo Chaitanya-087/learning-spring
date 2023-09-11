@@ -1,6 +1,7 @@
 package com.learning.spring.social.dto;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import com.learning.spring.social.entities.Tag;
@@ -17,4 +18,5 @@ public class PostDTO {
     private int likesCount;
     private int commentsCount;
     private Set<Tag> tags;
+    private List<CommentDTO> comments;
 }
