@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ import com.learning.spring.social.bindings.AddCommentForm;
 import com.learning.spring.social.bindings.AddPostForm;
 import com.learning.spring.social.bindings.RegistrationForm;
 import com.learning.spring.social.dto.CommentDTO;
+import com.learning.spring.social.dto.PostDTO;
 import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.entities.Like;
 import com.learning.spring.social.entities.LikeId;
@@ -36,7 +38,7 @@ import com.learning.spring.social.repositories.PostRepository;
 import com.learning.spring.social.repositories.TagRepository;
 import com.learning.spring.social.service.CommentService;
 import com.learning.spring.social.service.DomainUserService;
-import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
+import com.learning.spring.social.service.PostService;
 
 import jakarta.servlet.ServletException;
 
@@ -45,6 +47,9 @@ import jakarta.servlet.ServletException;
 public class ForumController {
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private PostService postService;
 
     @Autowired
     private TagRepository tagRepository;
@@ -64,15 +69,12 @@ public class ForumController {
         if (principal != null) {
             model.addAttribute("username", principal.getName());
         }
-        model.addAttribute("posts", postRepository.findAll());
+        model.addAttribute("posts", postService.findAll());
         return "forum/home";
     }
 
     @GetMapping("/post/form")
     public String getPostForm(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-        AddPostForm postForm = new AddPostForm();
-        User author = domainUserService.getByName(userDetails.getUsername()).get();
-        postForm.setUserId(author.getId());
         model.addAttribute("postForm", new AddPostForm());
         return "forum/postForm";
     }
@@ -82,12 +84,13 @@ public class ForumController {
         if (search == null || search.isEmpty()) {
             return "redirect:/forum";
         } else {
-            model.addAttribute("posts", postRepository.findAllByPattern(search.toLowerCase()));
+            model.addAttribute("posts", postRepository.findPostsByTagName(search.toLowerCase()));
         }
         return "forum/home";
     }
 
     @PostMapping("/post/add")
+    @Transactional
     public String addNewPost(@ModelAttribute("postForm") AddPostForm postForm, BindingResult bindingResult,
             RedirectAttributes attr, @AuthenticationPrincipal UserDetails userDetails) throws ServletException {
         if (bindingResult.hasErrors()) {
@@ -96,19 +99,25 @@ public class ForumController {
             attr.addFlashAttribute("post", postForm);
             return "redirect:/forum/post/form";
         }
-
+        Set<Tag> postTags = new HashSet<>();
+        String[] tags = postForm.getTags().split(",");
+        for (int i = 0; i < tags.length; i++) {
+            Tag existingTag = tagRepository.findByName(tags[i]);
+            if (existingTag == null) {
+                Tag newTag = new Tag();
+                newTag.setName(tags[i]);
+                tagRepository.save(newTag);
+                postTags.add(newTag);
+            } else {
+                postTags.add(existingTag);
+            }
+        }
         User user = domainUserService.getByName(userDetails.getUsername()).get();
         Post post = new Post();
         post.setAuthor(user);
-        
-        Set<Tag> tags = new HashSet<>();
-        Tag tag = new Tag();
-        tag.setName("test");
-        tagRepository.save(tag);
-        tags.add(tag);
-        post.setTags(tags);
         post.setContent(postForm.getContent());
         post.setTitle(postForm.getTitle());
+        post.setTags(postTags);
         postRepository.save(post);
 
         return String.format("redirect:/forum/post/%d", post.getId());
@@ -117,16 +126,14 @@ public class ForumController {
     @GetMapping("/post/{id}")
     public String postDetail(@PathVariable int id, Model model, @AuthenticationPrincipal UserDetails userDetails)
             throws ResourceNotFoundException {
-        Optional<Post> post = postRepository.findById(id);
-        if (post.isEmpty()) {
-            throw new ResourceNotFoundException("No post with the requested ID");
-        }
-        List<CommentDTO> commentList = commentService.findAllByPostId(id);
-        model.addAttribute("commentList", commentList);
-        model.addAttribute("post", post.get());
-        int numLikes = likeCRUDRepository.countByPostId(id);
-        model.addAttribute("likeCount", numLikes);
-        model.addAttribute("commentForm", new AddCommentForm());
+        PostDTO postDTO = postService.findById(id);
+
+        // List<CommentDTO> commentList = commentService.findAllByPostId(id);
+        // model.addAttribute("commentList", commentList);
+        model.addAttribute("post", postDTO);
+        // int numLikes = likeCRUDRepository.countByPostId(id);
+        // model.addAttribute("likeCount", numLikes);
+        // model.addAttribute("commentForm", new AddCommentForm());
         return "forum/posts";
     }
 

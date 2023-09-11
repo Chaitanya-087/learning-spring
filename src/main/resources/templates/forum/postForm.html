@@ -1,18 +1,135 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>New Post Form</title>
-</head>
-<body>
-	<h1>Create a new post!</h1>
-	<form method="post" action="#" th:action="@{/forum/post/add}" th:object="${postForm}">
-    <label for="title">title</label>
-    <input type="text" id="title" name="title" th:field="*{title}">
-		<label for="content">Content</label>
-		<textarea id="content" name="content" th:field="*{content}"></textarea>
-		<input type="hidden" th:field="*{userId}">
-		<input type="submit" value="Create!">
-	</form>
-</body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" th:href="@{/css/postForm.css}" />
+    <title>New Post Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/70f63a8d9c.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <a class="btn-back" href="/forum">
+      <i class="fa-solid fa-arrow-left fa-2xl" style="color: #ffffff"></i>
+	</a>
+    <main>
+      <h1 class="title">Create Post</h1>
+      <form
+        method="post"
+        action="#"
+        th:action="@{/forum/post/add}"
+        th:object="${postForm}"
+        id="post-form"
+      >
+        <div class="input-group">
+          <label for="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            th:field="*{title}"
+            placeholder="title"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label for="content">Content</label>
+          <textarea
+            id="content"
+            name="content"
+            rows="7"
+            th:field="*{content}"
+            required
+            placeholder="say something..."
+          ></textarea>
+        </div>
+        <div class="input-group">
+          <label for="tags">Tags</label>
+          <input
+            type="text"
+            th:field="*{tags}"
+            placeholder="type tag and press enter"
+            id="tags"
+          />
+          <div id="tags-container" class="tags-container"></div>
+        </div>
+        <button class="btn-submit" type="submit">Submit</button>
+      </form>
+    </main>
+    <svg
+      class="waves top"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+    >
+      <path
+        fill="#0099ff"
+        fill-opacity="1"
+        d="M0,128L48,112C96,96,192,64,288,90.7C384,117,480,203,576,213.3C672,224,768,160,864,128C960,96,1056,96,1152,112C1248,128,1344,160,1392,176L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"
+      ></path>
+    </svg>
+    <svg
+      class="waves bottom"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1440 320"
+    >
+      <path
+        fill="#0099ff"
+        fill-opacity="1"
+        d="M0,128L48,112C96,96,192,64,288,90.7C384,117,480,203,576,213.3C672,224,768,160,864,128C960,96,1056,96,1152,112C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+      ></path>
+    </svg>
+    <script>
+      const tagsInput = document.querySelector("#tags");
+      const tagsContainer = document.querySelector("#tags-container");
+      const postForm = document.querySelector("#post-form");
+      let tags = [];
+      postForm.addEventListener("keypress", (event) => {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+        }
+      });
+
+      tagsInput.addEventListener("keypress", (event) => {
+        const inputValue = tagsInput.value.trim();
+        if (inputValue === "") return;
+        if (event.keyCode === 13) {
+          console.log(inputValue);
+          tags.push(inputValue);
+          console.log(tags);
+          tagsContainer.innerHTML = tags
+            .map((tag, i) => {
+              return `
+						<div class="tag">
+							<button type="button" class="btn-delete" onclick="deleteTag(this)" data-text="${tag}">
+								<div class="x-icon">
+									<i class="fa-solid fa-xmark" style="color: #ffffff;"></i>	
+								</div>
+							</button>
+							<p>${tag}</p>	
+						</div>
+					`;
+            })
+            .join("");
+          tagsInput.value = "";
+        }
+      });
+
+      postForm.addEventListener("submit", (e) => {
+        const StringifiedTags = tags.join(",");
+        tagsInput.value = StringifiedTags;
+      });
+
+      const deleteTag = (elem) => {
+        tagsContainer.removeChild(elem.parentElement);
+        tags = tags.filter((tag) => tag !== elem.dataset.text);
+      };
+    </script>
+  </body>
 </html>
