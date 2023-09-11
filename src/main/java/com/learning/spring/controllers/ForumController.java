@@ -80,11 +80,15 @@ public class ForumController {
     }
 
     @GetMapping("/search")
-    public String searchPost(@RequestParam("search") String search, Model model) {
+    public String searchPost(@RequestParam("search") String search, Principal principal, Model model) {
+        model.addAttribute("isLoggedIn", principal != null);
+        if (principal != null) {
+            model.addAttribute("username", principal.getName());
+        }
         if (search == null || search.isEmpty()) {
             return "redirect:/forum";
         } else {
-            model.addAttribute("posts", postRepository.findPostsByTagName(search.toLowerCase()));
+            model.addAttribute("posts", postService.findByPattern(search));
         }
         return "forum/home";
     }
@@ -124,17 +128,18 @@ public class ForumController {
     }
 
     // @GetMapping("/post/{id}")
-    // public String postDetail(@PathVariable int id, Model model, @AuthenticationPrincipal UserDetails userDetails)
-    //         throws ResourceNotFoundException {
-    //     PostDTO postDTO = postService.findById(id);
+    // public String postDetail(@PathVariable int id, Model model,
+    // @AuthenticationPrincipal UserDetails userDetails)
+    // throws ResourceNotFoundException {
+    // PostDTO postDTO = postService.findById(id);
 
-    //     // List<CommentDTO> commentList = commentService.findAllByPostId(id);
-    //     // model.addAttribute("commentList", commentList);
-    //     model.addAttribute("post", postDTO);
-    //     // int numLikes = likeCRUDRepository.countByPostId(id);
-    //     // model.addAttribute("likeCount", numLikes);
-    //     // model.addAttribute("commentForm", new AddCommentForm());
-    //     return "forum/posts";
+    // // List<CommentDTO> commentList = commentService.findAllByPostId(id);
+    // // model.addAttribute("commentList", commentList);
+    // model.addAttribute("post", postDTO);
+    // // int numLikes = likeCRUDRepository.countByPostId(id);
+    // // model.addAttribute("likeCount", numLikes);
+    // // model.addAttribute("commentForm", new AddCommentForm());
+    // return "forum/posts";
     // }
 
     @PostMapping("/post/{id}/like")
