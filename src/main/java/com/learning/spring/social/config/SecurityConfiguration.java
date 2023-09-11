@@ -23,7 +23,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
             .authorizeHttpRequests((requests) -> requests
             .requestMatchers("/forum/register", "/error", "/css/**", "/js/**", "/forum","/classroom/**").permitAll()

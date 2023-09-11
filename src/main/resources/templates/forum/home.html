@@ -19,48 +19,66 @@
           src="https://th.bing.com/th/id/OIP.Xz0EqBxG4a10yKT7ARbsGgHaEc?pid=ImgDet&rs=1"
           alt="dodge"
         />
-        <nav class="wrapper">
-          <ul>
-            <li>
-              <a th:href="@{/forum}">All Posts</a>
-            </li>
-            <li>
-              <a href="#">Profile</a>
-            </li>
-            <li>
-              <a th:href="@{/forum/post/form}">New Post</a>
-            </li>
-          </ul>
-        </nav>
         <form id="search-form" action="#" th:action="@{/forum/search}">
           <input
             type="text"
             name="search"
             id="search"
-            placeholder="Search Posts"
+            placeholder="@username, #tag, post title"
           />
           <button type="submit" class="btn-search">
             <i class="fa-solid fa-magnifying-glass"></i>
           </button>
         </form>
-        <div class="user-details-wrapper">
-          <div class="user-avatar">
-            <span class="avatar-text">u</span>
+        <nav class="wrapper">
+          <ul class="nav-items">
+            <li class="nav-item">
+              <i class="fa-solid fa-house" style="color: #282829"></i>
+              <a th:href="@{/forum}" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+              <i class="fa-regular fa-square-plus" style="color: #282829"></i>
+              <a th:href="@{/forum/post/form}" class="nav-link">Create</a>
+            </li>
+            <li class="nav-item">
+              <i
+                class="fa-solid fa-right-from-bracket"
+                style="color: #282829"
+              ></i>
+              <div th:if="${isLoggedIn}">
+                <form
+                  action="#"
+                  class="nav-link"
+                  th:action="@{/logout}"
+                  method="post"
+                >
+                  <button class="btn-auth" type="submit">logout</button>
+                </form>
+              </div>
+              <div th:unless="${isLoggedIn}">
+                <form
+                  action="#"
+                  class="nav-link"
+                  th:action="@{/login}"
+                  method="get"
+                >
+                  <button class="btn-auth" type="submit">login</button>
+                </form>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="user-details">
+          <div class="avatar">
+            <span class="avatar-text" th:text="${symbol}">u</span>
           </div>
-          <div class="user-details">
-            <div th:if="${isLoggedIn}">
-              <span class="name" th:text="${username}">user</span>
-              <form action="#" th:action="@{/logout}" method="post">
-                <button class="btn-auth" type="submit">logout</button>
-              </form>
-            </div>
 
-            <div th:unless="${isLoggedIn}">
-              <span class="name">anonymous</span>
-              <form action="#" th:action="@{/login}" method="get">
-                <button class="btn-auth" type="submit">login</button>
-              </form>
-            </div>
+          <div th:if="${isLoggedIn}">
+            <span class="username" th:text="${username}">user</span>
+          </div>
+
+          <div th:unless="${isLoggedIn}">
+            <span class="username">anonymous</span>
           </div>
         </div>
       </div>
@@ -93,11 +111,18 @@
                 voluptatum, voluptate, quibusdam, quia voluptas quod quos
                 voluptatem quas doloribus quidem voluptatibus.
               </p>
-              <div class="tags-container">
-                <span class="tags-title">tags</span>
-                <span class="dot"></span>
-                <div class="tags" th:each="tag: ${post.tags}">
-                  <span class="tag" th:text="${tag.name}">test</span>
+              <div th:if="${post.tags.size > 0}">
+                <div class="tags-container">
+                  <span class="tags-title">tags</span>
+                  <span class="dot"></span>
+                  <div class="tags" th:each="tag: ${post.tags}">
+                    <a
+                      href="#"
+                      th:href="@{/forum/tag/{name}(name=${tag.name})}"
+                    >
+                      <span class="tag" th:text="${tag.name}">test</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -109,7 +134,16 @@
             </div>
             <div class="stats">
               <div class="likes">
-                <i class="fa-regular fa-heart"></i>
+                <form
+                  action="#"
+                  th:action="@{/forum/post/{id}/like(id=${post.id})}"
+                  method="post"
+                  id="like-form"
+                >
+                  <button type="submit" class="btn-like">
+                    <i class="fa-regular fa-heart"></i>
+                  </button>
+                </form>
                 <span class="likes-count" th:text="${post.likesCount}">10</span>
               </div>
               <div class="comments">

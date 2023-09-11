@@ -17,6 +17,4 @@ public class PostDTO {
     private int likesCount;
     private int commentsCount;
     private Set<Tag> tags;
-    
-    // private boolean isLiked;
 }

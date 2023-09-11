@@ -2,7 +2,6 @@ package com.learning.spring.controllers;
 
 import java.security.Principal;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,15 +23,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.learning.spring.social.bindings.AddCommentForm;
 import com.learning.spring.social.bindings.AddPostForm;
 import com.learning.spring.social.bindings.RegistrationForm;
-import com.learning.spring.social.dto.CommentDTO;
-import com.learning.spring.social.dto.PostDTO;
 import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.entities.Like;
 import com.learning.spring.social.entities.LikeId;
 import com.learning.spring.social.entities.Post;
 import com.learning.spring.social.entities.Tag;
 import com.learning.spring.social.entities.User;
-import com.learning.spring.social.exceptions.ResourceNotFoundException;
 import com.learning.spring.social.repositories.LikeCRUDRepository;
 import com.learning.spring.social.repositories.PostRepository;
 import com.learning.spring.social.repositories.TagRepository;
@@ -68,8 +64,24 @@ public class ForumController {
         model.addAttribute("isLoggedIn", principal != null);
         if (principal != null) {
             model.addAttribute("username", principal.getName());
+            model.addAttribute("symbol", principal.getName().substring(0, 1));
+        } else {
+            model.addAttribute("username", "anonymous"); 
+            model.addAttribute("symbol", "a");
         }
+
         model.addAttribute("posts", postService.findAll());
+        return "forum/home";
+    }
+
+    @GetMapping("/tag/{name}") 
+    public String getPostsByTag(@PathVariable String name, Model model, Principal principal) {
+        model.addAttribute("isLoggedIn", principal != null);
+        if (principal != null) {
+            model.addAttribute("username", principal.getName());
+            model.addAttribute("symbol", principal.getName().substring(0, 1));
+        }
+        model.addAttribute("posts", postService.findByPattern("#" + name));
         return "forum/home";
     }
 
@@ -84,6 +96,7 @@ public class ForumController {
         model.addAttribute("isLoggedIn", principal != null);
         if (principal != null) {
             model.addAttribute("username", principal.getName());
+            model.addAttribute("symbol", principal.getName().substring(0, 1));
         }
         if (search == null || search.isEmpty()) {
             return "redirect:/forum";
@@ -126,21 +139,6 @@ public class ForumController {
 
         return "redirect:/forum";
     }
-
-    // @GetMapping("/post/{id}")
-    // public String postDetail(@PathVariable int id, Model model,
-    // @AuthenticationPrincipal UserDetails userDetails)
-    // throws ResourceNotFoundException {
-    // PostDTO postDTO = postService.findById(id);
-
-    // // List<CommentDTO> commentList = commentService.findAllByPostId(id);
-    // // model.addAttribute("commentList", commentList);
-    // model.addAttribute("post", postDTO);
-    // // int numLikes = likeCRUDRepository.countByPostId(id);
-    // // model.addAttribute("likeCount", numLikes);
-    // // model.addAttribute("commentForm", new AddCommentForm());
-    // return "forum/posts";
-    // }
 
     @PostMapping("/post/{id}/like")
     public String postLike(@PathVariable int id, @AuthenticationPrincipal UserDetails userDetails,
