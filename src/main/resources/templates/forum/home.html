@@ -95,7 +95,11 @@
               </div>
               <div class="author-info">
                 <p class="name" th:text="${post.author.name}">John Doe</p>
-                <span class="createdAt" th:text="${#calendars.format(post.createdAt, 'dd MMM, yyyy')}">just now</span>
+                <!-- <span class="createdAt" th:text="${#calendars.format(post.createdAt, 'dd MMM, yyyy')}">just now</span> -->
+                <span
+                  class="createdAt"
+                  th:attr="data-datetime=${post.createdAt}"
+                ></span>
               </div>
             </div>
           </div>
@@ -174,6 +178,14 @@
         </article>
       </section>
     </main>
-    <script></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script>
+      // Initialize timeago.js
+      const timeElements = document.querySelectorAll(".createdAt");
+      timeElements.forEach((el) => {
+        const datetime = el.getAttribute("data-datetime");
+        el.innerHTML = moment(datetime).fromNow();
+      });
+    </script>
   </body>
 </html>
