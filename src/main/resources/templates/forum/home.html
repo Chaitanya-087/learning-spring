@@ -162,7 +162,21 @@
             </div>
           </div>
           <div class="comments-group">
-            <ul>
+            <form action="#" id="comment-form">
+              <div class="avatar">
+                <span class="avatar-text" th:text="${symbol}">u</span>
+              </div>
+              <input
+                type="text"
+                name="comment"
+                id="comment"
+                placeholder="Add a comment"
+              />
+              <button type="submit" class="btn-comment">
+                submit
+              </button>
+            </form>
+            <!-- <ul>
               <li th:each="comment : ${post.comments}">
                 <p th:text="${comment.user.name}"></p>
                 <p th:text="${comment.content}"></p>
@@ -173,7 +187,7 @@
                   </li>
                 </ul>
               </li>
-            </ul>
+            </ul> -->
           </div>
         </article>
       </section>
@@ -183,7 +197,7 @@
       // Initialize timeago.js
       const timeElements = document.querySelectorAll(".createdAt");
       timeElements.forEach((el) => {
-        const datetime = el.getAttribute("data-datetime");
+        const datetime = el.dataset.datetime;
         el.innerHTML = moment(datetime).fromNow();
       });
     </script>

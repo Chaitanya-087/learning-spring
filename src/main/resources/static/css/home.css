@@ -315,3 +315,39 @@ img {
   border: none;
   outline: none;
 }
+
+#comment-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+#comment-form input {
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  padding: 0.5rem;
+  flex: 1;
+  outline: none;
+  padding-left: 10px;
+  font-size: 15px;
+  color: #000;
+  border-radius: 25px;
+  border: 1px solid #dee0e1;
+}
+
+#comment-form .btn-comment {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  padding:0.55rem 0.75rem;
+  color: white;
+  /* font-size: 18px; */
+  font-weight: 700;
+  background-color: #007bff;
+}
