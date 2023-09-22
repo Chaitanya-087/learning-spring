@@ -1,6 +1,8 @@
 package com.learning.spring.social.dto;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +19,6 @@ public class PostDTO {
     private Date createdAt;
     private int likesCount;
     private int commentsCount;
-    private Set<Tag> tags;
-    private List<CommentDTO> comments;
+    private Set<TagDTO> tags = new HashSet<>();
+    private List<CommentDTO> comments = new ArrayList<>();
 }

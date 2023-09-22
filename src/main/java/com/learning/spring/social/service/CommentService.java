@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.learning.spring.social.dto.CommentDTO;
+import com.learning.spring.social.dto.ReplyDTO;
+import com.learning.spring.social.dto.UserDTO;
 import com.learning.spring.social.entities.Comment;
+// import com.learning.spring.social.entities.User;
 import com.learning.spring.social.repositories.CommentRepository;
 
 @Component
@@ -27,8 +30,9 @@ public class CommentService {
                 commentMap.putIfAbsent(comment.getId(), createCommentDTO(comment));
             } else {
                 Comment ancestor = findCommonAncestor(comment);
+                ReplyDTO replyDTO = creaReplyDTO(comment);
                 commentMap.putIfAbsent(ancestor.getId(), createCommentDTO(ancestor));
-                commentMap.get(ancestor.getId()).getReplies().add(comment);
+                commentMap.get(ancestor.getId()).getReplies().add(replyDTO);
             }
         }
         return commentMap.values().stream().toList();
@@ -38,8 +42,11 @@ public class CommentService {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(comment.getId());
         commentDTO.setContent(comment.getContent());
-        commentDTO.setUser(comment.getUser());
-        commentDTO.setPost(comment.getPost());
+         UserDTO userDTO = new UserDTO();
+        userDTO.setId(comment.getUser().getId());
+        userDTO.setName(comment.getUser().getName());
+        userDTO.setSymbol(comment.getUser().getName().substring(0, 1));
+        commentDTO.setUser(userDTO);
         return commentDTO;
     }
 
@@ -56,5 +63,17 @@ public class CommentService {
 
     public Optional<Comment> findById(Integer id) {
         return commentRepository.findById(id);
+    }
+
+    private ReplyDTO creaReplyDTO(Comment comment) {
+        ReplyDTO replyDTO = new ReplyDTO();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(comment.getUser().getId());
+        userDTO.setName(comment.getUser().getName());
+        userDTO.setSymbol(comment.getUser().getName().substring(0, 1));
+        replyDTO.setId(comment.getId());
+        replyDTO.setContent(comment.getContent());
+        replyDTO.setUser(userDTO);
+        return replyDTO;
     }
 }

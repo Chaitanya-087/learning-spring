@@ -1,6 +1,7 @@
 package com.learning.spring.social.repositories;
 
-import java.util.Set;
+import java.util.List;
+
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -14,5 +15,5 @@ public interface TagRepository extends CrudRepository<Tag, Integer> {
 
 
     @Query(value="SELECT t FROM Tag t JOIN t.posts p WHERE p = :post")
-    Set<Tag> findByPost(Post post);
+    List<Tag> findByPost(Post post);
 }

@@ -26,7 +26,7 @@ public class SecurityConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
             .authorizeHttpRequests((requests) -> requests
-            .requestMatchers("/forum/register", "/error", "/css/**", "/js/**", "/forum","/classroom/**").permitAll()
+            .requestMatchers("/forum/register", "/error", "/css/**", "/js/**", "/api/forum/**","/classroom/**").permitAll()
             .anyRequest().authenticated())
             .formLogin((login) -> login.loginProcessingUrl("/login").defaultSuccessUrl("/forum", true))
             .logout((logout) -> logout.logoutUrl("/logout").logoutSuccessUrl("/forum"));

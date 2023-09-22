@@ -1,8 +1,12 @@
 package com.learning.spring.social.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import javax.swing.text.html.Option;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.learning.spring.social.dto.CommentDTO;
 import com.learning.spring.social.dto.PostDTO;
+import com.learning.spring.social.dto.TagDTO;
 import com.learning.spring.social.dto.UserDTO;
 import com.learning.spring.social.entities.Comment;
 import com.learning.spring.social.entities.Post;
@@ -88,7 +93,11 @@ public class PostService {
         authorDTO.setSymbol(post.getAuthor().getName().substring(0, 1));
         int likesCount = likeCRUDRepository.countByPostId(post.getId());
         int commentsCount = commentRepository.countByPostId(post.getId());
-        Set<Tag> tags = tagRepository.findByPost(post);
+        Set<Tag> tags = new HashSet<>(tagRepository.findByPost(post));
+        Set<TagDTO> tagDTOs = new HashSet<>();
+        for (Tag tag : tags) {
+            tagDTOs.add(createTagDTO(tag));
+        }
         postDTO.setId(post.getId());
         postDTO.setTitle(post.getTitle());
         postDTO.setContent(post.getContent());
@@ -97,11 +106,23 @@ public class PostService {
         postDTO.setLikesCount(likesCount);
         postDTO.setCommentsCount(commentsCount);
         postDTO.setComments(commentDTOs);
-        postDTO.setTags(tags);
+        postDTO.setTags(tagDTOs);
         return postDTO;
     }
 
     public void save(Post post) {
         postRepository.save(post);
+    }
+    public TagDTO createTagDTO(Tag tag) {
+        TagDTO tagDTO = new TagDTO();
+        tagDTO.setId(tag.getId());
+        tagDTO.setName(tag.getName());
+        return tagDTO;
+    }
+    public Optional<PostDTO> findById(int id) {
+        Optional<Post> postOptional = postRepository.findById(id);
+        if (postOptional.isPresent()) {
+            return Optional.of(createPostDTO(postOptional.get()));  
+        } return Optional.empty();
     }
 }
